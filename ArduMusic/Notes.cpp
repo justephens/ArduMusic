@@ -102,7 +102,7 @@
 /* Stores the pitches that can be played. When a macro NOTE is used as an index in
  * this array, it will yield the proper pitch. Ex: Pitches[NOTE_C4] will give 262
  */
-const unsigned short Frequency[] =
+const unsigned short Frequency[] PROGMEM =
 {
 	33,		35,		37,		39,		41,		44,		46,		49,		52,		55,		58,		62,
 	65,		69,		73,		78,		82,		87,		93,		98,		104,	110,	117,	123,

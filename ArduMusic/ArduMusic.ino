@@ -5,7 +5,7 @@
 Tone buzzer[3];
 
 
-Note Music[3][9] = {
+Note Music[9] = {
   { NOTE_C4, 10 },
   { NOTE_D4, 10 },
   { NOTE_E4, 10 },
@@ -37,7 +37,7 @@ void loop()
   {
     // Play or stop the music
     buzzer[0].play(
-      Frequency[Music[i].pitch],
+      pgm_read_word(Frequency + Music[i].pitch),
       Music[i].duration * 20);
   
     // Wait until the next note
