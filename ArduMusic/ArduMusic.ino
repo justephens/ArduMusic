@@ -1,21 +1,56 @@
 #include <Tone.h>
 #include "Notes.cpp"
 
+
+
 // Create three tone controllers
 Tone buzzer[3];
 
 
-Note Music[9] = {
-  { NOTE_C4, 10 },
-  { NOTE_D4, 10 },
-  { NOTE_E4, 10 },
-  { NOTE_F4, 10 },
-  { NOTE_G4, 10 },
-  { NOTE_A4, 10 },
-  { NOTE_B4, 10 },
-  { NOTE_C5, 20 },
-  { NOTE_RST, 100 }
+// The "cursor" for each of the buzzers
+unsigned int music_pos[3] = { 0, 0, 0 };
+// Holds the length of the music
+unsigned int music_length = 9;
+
+
+// Defines the music
+Note Music[3][9] = {
+  {
+    { NOTE_C4, 10 },
+    { NOTE_D4, 10 },
+    { NOTE_E4, 10 },
+    { NOTE_F4, 10 },
+    { NOTE_G4, 10 },
+    { NOTE_A4, 10 },
+    { NOTE_B4, 10 },
+    { NOTE_C5, 20 },
+    { NOTE_RST, 10 }
+  },
+  {
+    { NOTE_E4, 10 },
+    { NOTE_F4, 10 },
+    { NOTE_G4, 10 },
+    { NOTE_A4, 10 },
+    { NOTE_B4, 10 },
+    { NOTE_C5, 10 },
+    { NOTE_D5, 10 },
+    { NOTE_E5, 20 },
+    { NOTE_RST, 10 }
+  },
+  {
+    { NOTE_G4, 10 },
+    { NOTE_A4, 10 },
+    { NOTE_B4, 10 },
+    { NOTE_C5, 10 },
+    { NOTE_D5, 10 },
+    { NOTE_E5, 10 },
+    { NOTE_F5, 10 },
+    { NOTE_G5, 20 },
+    { NOTE_RST, 10 }
+  }
 };
+
+
 
 void setup()
 {
@@ -26,22 +61,24 @@ void setup()
 
   // Creates a Serial connection
   Serial.begin(9600);
-  Serial.print("Program Begin \n");
-  Serial.print("Note size:");
-  Serial.println(sizeof(Note));
 }
+
+
 
 void loop()
 {
-  for (unsigned int i = 0; i < 9; i++)
+  for (unsigned int i = 0; i < 3; i++)
   {
-    // Play or stop the music
-    buzzer[0].play(
-      pgm_read_word(Frequency + Music[i].pitch),
-      Music[i].duration * 20);
-  
-    // Wait until the next note
-    while (buzzer[0].isPlaying());
+    // If the buzzer is not playing
+    if (!buzzer[i].isPlaying())
+    {
+      // Play the next note, advance the cursor
+      buzzer[i].play(
+        pgm_read_word(Frequency + Music[i][music_pos[i]++].pitch),
+        Music[i][music_pos[i]].duration * 20);
+
+      // Wrap the cursor if necessary
+      if (music_pos[i] >= music_length) music_pos[i] = 0;
+    }
   }
 }
-
