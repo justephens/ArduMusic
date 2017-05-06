@@ -85,12 +85,24 @@ def read_file():
     staff_count = 0;
 
 
+    # The xml tree
+    tree = None
+    
+    # Continually asks for a file to load until a
+    # valid file is opened or "exit" is typed
+    while True:
+        # Get file to load, append file extension
+        # if none given
+        music_file = input("Please give a file to load: ")
+        if '.' not in music_file: music_file += '.mscx'
 
-    # Gets the file to read from user
-    music_file = input("Please give a file to load: ")
-
-    # Get xml node to parse
-    tree = ET.parse(music_file)
+        # Attempt to load file, repeat loop if load
+        # fails, otherwise break the loop
+        try:
+            tree = ET.parse(music_file)
+            break
+        except: pass
+    
     root = tree.getroot()
     Score = tree.find("Score")
 
