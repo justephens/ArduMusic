@@ -2,13 +2,6 @@ import xml.etree.ElementTree as ET    # For parsing XML (Savefile)
 
 
 
-# Music stores the final form of music, stored
-# in a list of tuples (uchar, uchar) representing
-# (NotePitch, Duration)
-music = []
-
-
-
 def convert_pitch(note):
     '''
     Given a pitch from a MuseScore savefile, this
@@ -26,7 +19,7 @@ def convert_pitch(note):
 
 
 
-def read_duration(duration):
+def convert_duration(duration):
     '''
     This function returns a numeric value given a
     string that contains an english duration
@@ -52,6 +45,7 @@ def read_measure(Element):
     '''
     
     # Verify this tag defines a Measure
+    if type(Element) != ET.Element: return False
     if Element.tag != "Measure": return False
 
     # Loop through the children of the measure,
@@ -63,7 +57,7 @@ def read_measure(Element):
             noteTag = child.find("Note")
             pitchTag = noteTag.find("pitch")
 
-            duration = read_duration(durationTag.text)
+            duration = convert_duration(durationTag.text)
             pitch = pitchTag.text 
             print (str(int(pitch)-24) + " " + str (duration))
 
@@ -78,48 +72,50 @@ def read_measure(Element):
             '''
 
 
-
-##########################
-# INFORMATION ABOOUT PIECE
-##########################
-piece_composer = "Unknown"
-piece_title = "Unknown"
-staff_count = 0;
-
-# Gets the file to read from user
-music_file = input("Please give a file to load: ")
-
-# Get xml node to parse
-tree = ET.parse(music_file)
-root = tree.getroot()
-Score = tree.find("Score")
+def read_file():
+    '''
+    This function enters the program into a routine
+    where the user enters a MuseScore save file to
+    be loaded and returned
+    '''
+    
+    # INFORMATION ABOOUT PIECE
+    piece_composer = "Unknown"
+    piece_title = "Unknown"
+    staff_count = 0;
 
 
 
-for child in Score:
-    #############################
-    # GET INFORMATION ABOUT PIECE
-    #############################
-    if child.tag == "metaTag":
-        if child.attrib["name"] == "composer":
-            piece_composer = child.text
-        elif child.attrib["name"] == "workTitle":
-            piece_title = child.text
+    # Gets the file to read from user
+    music_file = input("Please give a file to load: ")
 
-    # Count the number of Staffs
-    if child.tag == "Part":
-        for x in child.findall("Staff"):
-            staff_count += 1
+    # Get xml node to parse
+    tree = ET.parse(music_file)
+    root = tree.getroot()
+    Score = tree.find("Score")
 
-    # Parse the measures in the Staff declaration
-    if child.tag == "Staff":
-        i = 0
-        for measure in child.findall("Measure"):
-            read_measure(measure)
+    for child in Score:
+        # GET INFORMATION ABOUT PIECE
+        if child.tag == "metaTag":
+            if child.attrib["name"] == "composer":
+                piece_composer = child.text
+            elif child.attrib["name"] == "workTitle":
+                piece_title = child.text
+
+        # Count the number of Staffs
+        if child.tag == "Part":
+            for x in child.findall("Staff"):
+                staff_count += 1
+
+        # Parse the measures in the Staff declaration
+        if child.tag == "Staff":
+            i = 0
+            for measure in child.findall("Measure"):
+                read_measure(measure)
 
 
 
-# Print info about the piece
-print ("Loaded music from file:  " + music_file)
-print ("    " + piece_title + " by " + piece_composer)
-print ("    " + str(staff_count) + " staffs")
+    # Print info about the piece
+    print ("Loaded music from file:  " + music_file)
+    print ("    " + piece_title + " by " + piece_composer)
+    print ("    " + str(staff_count) + " staffs")
