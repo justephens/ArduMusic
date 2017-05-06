@@ -10,16 +10,17 @@ def select_device():
     and is allowed to pick one
     '''
     
-    # Gets a list of available devices and checks
-    # that there is at least one connected
+    # Gets a list of available devices
     ports = list_ports.comports()
-    if (len(ports) == 0): return None
 
     # Prints all the devices in a numbered list
     # with their names
     print ("DEVICES FOUND (" + str(len(ports)) + "):")
     for i, p in enumerate(ports):
         print ("  " + str(i+1) + ". " + str(p.device) + "\n")
+
+    # If there are no devices return None
+    if (len(ports) == 0): return None
 
     # Repeatedly asks for a device until a proper
     # number is given, then continues with program
