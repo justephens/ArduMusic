@@ -55,7 +55,32 @@ def device_begin(device):
 
 
 def pack_short(val):
+    '''
+    Give a value between 0 and 65546, this will
+    convert it to a bytes form compatible with the
+    Arduino and return it
+    '''
+    
     if val >= 0 and val < 65536:
         return struct.pack("H", val)
     else:
         return None
+
+
+def device_readline(device):
+    '''
+    Reads a line from the given device, and strips
+    it of \n and \r characters
+    '''
+    
+    # Read a line
+    string = device.readline().decode('utf-8')
+
+    # Create a dictionary mapping '\n' and '\r' to
+    # None, so they can be removed with translate
+    translation_table = dict.fromkeys(map(ord, '\n\r'), None)
+    string = string.translate(translation_table)
+
+    # Return the string, now with no special anythings,
+    # Just plain text
+    return string
