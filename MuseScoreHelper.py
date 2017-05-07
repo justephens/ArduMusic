@@ -37,7 +37,7 @@ def convert_duration(duration):
 
 
 
-def read_measure(Element):
+def read_measure(Element, Music):
     '''
     This function is used to abstract the parsing
     process by handling the parsing for a <Measure>
@@ -59,7 +59,8 @@ def read_measure(Element):
 
             duration = convert_duration(durationTag.text)
             pitch = pitchTag.text 
-            print (str(int(pitch)-24) + " " + str (duration))
+
+            Music.append((int(pitch)-24, duration))
 
         '''
         elif child.tag == "Rest":
@@ -78,6 +79,9 @@ def read_file():
     where the user enters a MuseScore save file to
     be loaded and returned
     '''
+
+    # The music
+    Music = [(int, int)]
     
     # INFORMATION ABOOUT PIECE
     piece_composer = "Unknown"
@@ -101,10 +105,13 @@ def read_file():
         try:
             tree = ET.parse(music_file)
             break
-        except: pass
-    
+        except:
+            pass
+
+
     root = tree.getroot()
     Score = tree.find("Score")
+
 
     for child in Score:
         # GET INFORMATION ABOUT PIECE
@@ -123,7 +130,7 @@ def read_file():
         if child.tag == "Staff":
             i = 0
             for measure in child.findall("Measure"):
-                read_measure(measure)
+                read_measure(measure, Music)
 
 
 
@@ -131,3 +138,7 @@ def read_file():
     print ("Loaded music from file:  " + music_file)
     print ("    " + piece_title + " by " + piece_composer)
     print ("    " + str(staff_count) + " staffs")
+
+
+    # Return the list of tuples
+    return Music
