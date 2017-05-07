@@ -1,36 +1,46 @@
 import MuseScoreHelper as MuseScore
 import SerialHelper
 
-device  = SerialHelper.select_device()
+
+
+# Allow the user to select from a list of devices,
+# and then form a connection with the given device
+device = SerialHelper.select_device()
 Arduino = SerialHelper.device_begin(device)
 
 
-val = int(input("Pitch: "))
-output = bytes([val])
-val = int(input("Duration: "))
-output += bytes([val])
 
-for i in range(0, 8):
-    try:
-        val = int(input("Pitch: "))
-        output += bytes([val])
-        val = int(input("Duration: "))
-        output += bytes([val])
-    except:
-        print("invalid")
-        pass
+# Asks the user for a file to load music from, and
+# loads it into a list of tuples (pitch, duration)
+Music = MuseScore.read_file()
 
-print(Arduino.read(44))
+# Loop through the musical tuples and build a byte
+# array that can be sent to the Arduino
+output = bytes([Music[1][0]]) + bytes([Music[1][1]])
+for i in Music[2:]:
+    output += bytes([i[0]])
+    output += bytes([i[1]])
 
+
+
+# Write 255 to the Arduino to begin a transmission
 Arduino.write(bytes([255]))
-print(Arduino.read(3))
 
-print(Arduino.read(24))
 
+
+# Once the Arduino recieves the starting opcode, it
+# will send back the max length of the song
+Max_notes       = int(SerialHelper.device_readline(Arduino))
+print(str(Max_notes))
+
+
+
+# After recieving information about the Arduino, we
+# send back a message confirming the number of notes
 Arduino.write(SerialHelper.pack_short(9))
-print(Arduino.read(1))
 
-Arduino.write(output)
+print(output[0:Max_notes])
+Arduino.write(output[0:Max_notes])
 
 
 #Arduino.write("R".encode('utf-8'))
