@@ -97,7 +97,8 @@
 #define NOTE_DS8 87
 #define NOTE_RST 88
 
-
+/* Signifies the start of a music transfer */
+#define OP_MUSIC 255
 
 /* Stores the pitches that can be played. When a macro NOTE is used as an index in
  * this array, it will yield the proper pitch. Ex: Pitches[NOTE_C4] will give 262
