@@ -1,5 +1,6 @@
 from serial.tools import list_ports # For autodetecting devices
 import serial       # For communicating with Arduino
+import struct       # For packing data
 
 
 
@@ -50,3 +51,11 @@ def device_begin(device):
     
     # Return the serial connection
     return ser
+
+
+
+def pack_short(val):
+    if val >= 0 and val < 65536:
+        return struct.pack("H", val)
+    else:
+        return None
