@@ -136,7 +136,7 @@ def read_file():
 
     # Print info about the piece
     print ("Loaded music from file:  " + music_file)
-    print ("    " + piece_title + " by " + piece_composer)
+    print ("    " + str(piece_title) + " by " + str(piece_composer))
     print ("    " + str(staff_count) + " staffs")
 
 
