@@ -61,6 +61,9 @@ def pack_short(val):
     Arduino and return it
     '''
     
+    if type(val) != int:
+        return None
+            
     if val >= 0 and val < 65536:
         return struct.pack("H", val)
     else:
