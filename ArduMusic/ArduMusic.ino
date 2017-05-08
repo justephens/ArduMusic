@@ -1,32 +1,33 @@
 #include <Tone.h>
 #include "Notes.cpp"
 
-#define MAX_MUSIC_LEN 9
+#define MAX_MUSIC_LEN 400
+#define NUMBER_OF_BUZZERS 2
 
 
 // Create two tone controllers
 Tone buzzer[2];
 
 // Holds the time when the buzzers should play to
-unsigned long buzzer_target[2] = { 0, 0 };
+unsigned long buzzer_target[NUMBER_OF_BUZZERS];
 
 
 // The "cursor" for each of the buzzers
-unsigned int music_pos[2] = { 0, 0 };
+unsigned int music_pos[NUMBER_OF_BUZZERS];
 // Holds the length of the music
-unsigned int music_length[2] = { 0, 0 };
+unsigned int music_length[NUMBER_OF_BUZZERS];
 
 
 // Defines the music
-Note Music[2][MAX_MUSIC_LEN];
+Note Music[NUMBER_OF_BUZZERS][MAX_MUSIC_LEN];
 
 
 
 void setup()
 {
-  // Here we initiallize our three piezo buzzers
-  buzzer[0].begin(9);
-  buzzer[1].begin(10);
+  // Here we initiallize our piezo buzzers, on pins 8+
+  for (unsigned int i = 0; i < NUMBER_OF_BUZZERS; i++)
+    buzzer[i].begin(8+i);
 
   // Creates a Serial connection
   Serial.begin(9600);
@@ -43,7 +44,7 @@ void loop()
 
 
   // Iterate through both buzzers
-  for (unsigned int i = 0; i < 2; i++)
+  for (unsigned int i = 0; i < NUMBER_OF_BUZZERS; i++)
   {
 
     // Check if it's time for the buzzer to stop
@@ -84,22 +85,28 @@ void loop()
     {
       // Once the opcode is verified, send data about the arduino
       Serial.println(MAX_MUSIC_LEN);
-      
-      // Immediately following the opening OPcode should be a short detailing
-      // how many notes there are for the first buzzer
-      Serial.readBytes(dat, 2);
-      
-      // Get the length of the music and buffer that many x2 bytes (one byte
-      // for pitch, one for duration) into the music array
-      music_length[0] = *(unsigned short*)&dat[0];
-      Serial.readBytes((byte*)&Music[0][0], music_length[0]*2);
+      Serial.println(NUMBER_OF_BUZZERS);
 
 
-      // After loading all the music, reset the buzzers and internal cursors
-      buzzer_target[0]  = 0;
-      buzzer_target[1]  = 0;
-      music_pos[0]      = 0;
-      music_pos[1]      = 0;
+      // Receive data for both buzzers, one after the other.
+      // If only data for one buzzer is given, timeout will occur
+      for (unsigned int i = 0; i < NUMBER_OF_BUZZERS; i++)
+      {
+        // Reset the temporary datafields
+        dat[0] = 0, dat[1] = 0;
+        
+        // First two bytes details how many notes will be in the music
+        // for this buzzer
+        Serial.readBytes(dat, 2);
+        music_length[i] = *(unsigned short*)&dat[0];
+
+        // Read the follow data into the music buffer for this buzzer
+        Serial.readBytes((byte*)&Music[i][0], music_length[i]*2);
+  
+        // After loading all the music, reset the buzzers and internal cursors
+        buzzer_target[i]  = 0;
+        music_pos[i]      = 0;
+      }
     }
     
   }
