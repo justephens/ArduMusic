@@ -50,17 +50,27 @@ def read_measure(Element, Music):
 
     # Loop through the children of the measure,
     # and handle each type (chord, rest, timesig)
-    # appropriately
     for child in list(Element):
         if child.tag == "Chord":
             durationTag = child.find("durationType")
-            noteTag = child.find("Note")
-            pitchTag = noteTag.find("pitch")
-
             duration = convert_duration(durationTag.text)
-            pitch = pitchTag.text 
 
-            Music.append((int(pitch)-24, duration))
+            # Loop through all the notes in a chord
+            for i, noteTag in enumerate(child.findall("Note")):
+                if i >= 2: break
+                # Finds the pitch and duration
+                pitchTag = noteTag.find("pitch")
+                pitch = pitchTag.text
+
+                # Adds this note to the music
+                Music[i].append((int(pitch)-24, duration))
+
+            # If there were fewer than 2 notes in
+            # the chord, the rest the second buzzer
+            if (len(child.findall("Note")) < 2):
+                Music[1].append((int(88), duration))
+
+
 
         '''
         elif child.tag == "Rest":
@@ -70,7 +80,7 @@ def read_measure(Element, Music):
             print("Rest")
         elif child.tag == "TimeSig":
             print("TimeSig")
-            '''
+        '''
 
 
 def read_file():
@@ -80,8 +90,8 @@ def read_file():
     be loaded and returned
     '''
 
-    # The music
-    Music = [(int, int)]
+    # The music storage device to be used
+    Music = ([(int, int)],[(int, int)])
     
     # INFORMATION ABOOUT PIECE
     piece_composer = "Unknown"
