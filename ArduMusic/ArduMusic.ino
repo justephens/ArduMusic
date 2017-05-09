@@ -3,7 +3,7 @@
 
 #define MAX_MUSIC_LEN 400
 #define NUMBER_OF_BUZZERS 2
-
+#define TEMPO 70000
 
 // Create two tone controllers
 Tone buzzer[2];
@@ -63,7 +63,7 @@ void loop()
 
 
       // Set the time to stop playing
-      buzzer_target[i] += Music[i][music_pos[i]].duration * 50000;
+      buzzer_target[i] += Music[i][music_pos[i]].duration * TEMPO;
       
     }
     
