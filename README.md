@@ -1,5 +1,5 @@
 # ArduMusic
-This project aims to use an Arduino Uno to play music. Eventually, it is hoped one would be able to create music in a Software such as [MuseScore](https://musescore.org/) and directly upload this to the Arduino via a USB connection.
+This project aims to use an Arduino Uno to play music. One can create music in [MuseScore](https://musescore.org/) and directly upload this to the Arduino via a USB connection.
 
 ## Arduino
 ArduMusic uses the ToneLibrary by Brett Hagman to play notes. To compile and upload your Arduino code, you need to install this library. There are two ways to do this, the first being the easiest:
